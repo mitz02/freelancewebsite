@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        #gallery {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .thumbnail-container {
+            margin: 5px;
+            cursor: pointer;
+            width: 200px;
+            position: relative;
+        }
+
+        .thumbnail {
+            width: 100%;
+            height: auto;
+            cursor: pointer;
+        }
+
+        .download-icon {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        #previewContainer {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            text-align: center;
+        }
+
+        #previewImageContainer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #previewImage {
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+            object-fit: contain;
+        }
+
+        #loadingIndicator {
+            color: #fff;
+            font-size: 24px;
+            margin-top: 20%;
+        }
+
+        #controls {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .control-button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .download-icon-full {
+            cursor: pointer;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+        }
+    </style>
+    <title>Image Gallery</title>
+</head>
+<body>
+    <div id="gallery">
+        <!-- Thumbnail images will be dynamically populated here -->
+        <div class="thumbnail-container" onclick="showPreview(0)">
+            <img class="thumbnail" src="../img/5570025.jpg" alt="Image 1">
+            <i class="fas fa-download download-icon" onclick="downloadImage(0)"></i>
+        </div>
+        <div class="thumbnail-container" onclick="showPreview(1)">
+            <img class="thumbnail" src="../img/aerial-view-businessman-using-computer-laptop.jpg" alt="">
+            <i class="fas fa-download download-icon" onclick="downloadImage(1)"></i>
+        </div>
+        <div class="thumbnail-container" onclick="showPreview(2)">
+            <img class="thumbnail" src="../img/from-worker-typing-laptop (1).jpg" alt="Image 3">
+            <i class="fas fa-download download-icon" onclick="downloadImage(2)"></i>
+        </div>
+        <!-- Add more images as needed -->
+    </div>
+    
+    <div id="previewContainer">
+        <div id="previewImageContainer">
+            <div id="controls">
+                <button class="control-button" onclick="prevImage()"><i class="fas fa-chevron-left"></i></button>
+                <button class="control-button" onclick="zoomOut()"><i class="fas fa-search-minus"></i></button>
+                <button class="control-button" onclick="closePreview()"><i class="fas fa-times"></i></button>
+                <button class="control-button" onclick="zoomIn()"><i class="fas fa-search-plus"></i></button>
+                <button class="control-button" onclick="nextImage()"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            <img id="previewImage" src="" alt="Preview Image">
+            <i class="fas fa-download download-icon-full" onclick="downloadImage(currentIndex)"></i>
+        </div>
+        <div id="loadingIndicator">Loading...</div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const gallery = document.getElementById('gallery');
+            const previewContainer = document.getElementById('previewContainer');
+            const previewImage = document.getElementById('previewImage');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            let currentIndex;
+            let zoomLevel = 1;
+
+            // Populate thumbnails and set click event
+            const thumbnailContainers = document.querySelectorAll('.thumbnail-container');
+            thumbnailContainers.forEach((container, index) => {
+                container.addEventListener('click', function () {
+                    showPreview(index);
+                });
+            });
+
+            function showPreview(index) {
+                currentIndex = index;
+                const imageUrl = thumbnailContainers[index].querySelector('.thumbnail').src;
+                previewImage.src = imageUrl;
+                zoomLevel = 1;
+                applyZoom();
+                previewContainer.style.display = 'flex';
+                loadingIndicator.style.display = 'none';
+            }
+
+            function applyZoom() {
+                previewImage.style.transform = `scale(${zoomLevel})`;
+            }
+
+            window.closePreview = function () {
+                previewContainer.style.display = 'none';
+            };
+
+            window.zoomIn = function () {
+                zoomLevel += 0.1;
+                applyZoom();
+            };
+
+            window.zoomOut = function () {
+                if (zoomLevel > 0.1) {
+                    zoomLevel -= 0.1;
+                    applyZoom();
+                }
+            };
+
+            window.downloadImage = function (index) {
+                const link = document.createElement('a');
+                link.href = thumbnailContainers[index].querySelector('.thumbnail').src;
+                link.download = `image_${index + 1}.jpg`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            };
+
+            window.prevImage = function () {
+                if (currentIndex > 0) {
+                    currentIndex--;
+                    showPreview(currentIndex);
+                }
+            };
+
+            window.nextImage = function () {
+                if (currentIndex < thumbnailContainers.length - 1) {
+                    currentIndex++;
+                    showPreview(currentIndex);
+                }
+            };
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
